@@ -65,6 +65,31 @@ $.SpellChecker.prototype = {
 		var prevText = this.text, text = this.$element.val(), self = this;
 		if ( prevText === text ) return;
 		this.text = this.$element.val();
+		/* by @filipecrosk */
+		$('body').append('<div id="spell_loading"><span>Loading...</span></div>');
+		element_offset = this.$element.offset();
+		$('#spell_loading').css({
+				position        : 'absolute',
+				top             : element_offset.top + 'px',
+				left            : element_offset.left + 'px',
+				opacity         : '0.4',
+				backgroundColor : '#000',
+				'z-index'       : '999',
+				height          : this.$element.height(),
+				width           : this.$element.width()
+		});
+		$('#spell_loading span').css({
+				"display"		: "block",
+				"text-align" 	: "center",
+				"font-family"	: "verdana",
+				"font-size"		: "11px",
+				"font-weight"	: "bold",
+				color			: "#FFF",
+				"margin"		: "10px"
+		});
+		$("#spell_loading").ajaxStart(function(){ $(this).fadeIn(); });
+		$("#spell_loading").ajaxStop(function(){ $(this).fadeOut(); });
+		/* by @filipecrosk */
 		$.get(this.options.url, $.extend({ text: this.text }, this.options), function(r) { self.parseResults(r); });
 	},
 	
