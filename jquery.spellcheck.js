@@ -38,10 +38,10 @@ $.fn.checkspelling = function() {
 $.SpellChecker = function(element, options) {
 	this.$element = $(element);
 	this.options = $.extend({
-		lang: 'en',
+		lang: 'pt',
 		autocheck: 750,
 		events: 'keypress blur paste',
-		url: 'spellcheck.php',
+		url: '../includes/php/spellcheck.php',
 		ignorecaps: 1,
 		ignoredigits: 1
 	}, options);
@@ -87,10 +87,16 @@ $.SpellChecker.prototype = {
 				color			: "#FFF",
 				"margin"		: "10px"
 		});
-		$("#spell_loading").ajaxStart(function(){ $(this).fadeIn(); });
-		$("#spell_loading").ajaxStop(function(){ $(this).fadeOut(); });
+		
+		$.ajax({
+			  type		: "GET",
+			  url		: this.options.url,
+			  data		: $.extend({ text: this.text }, this.options), 
+			  success	: function(r) { self.parseResults(r); },
+			  ajaxSend	: function(){ $("#spell_loading").fadeIn(); },
+			  complete	: function(){ $("#spell_loading").fadeOut(); }
+		});
 		/* by @filipecrosk */
-		$.get(this.options.url, $.extend({ text: this.text }, this.options), function(r) { self.parseResults(r); });
 	},
 	
 	parseResults: function(results) {
@@ -118,7 +124,7 @@ $.SpellChecker.prototype = {
 			dl.push('<dl><dt>'+result.word+'</dt>');
 			for ( k=0; k<suggestions.length; k++ )
 				dl.push('<dd>'+suggestions[k]+'</dd>');
-			dl.push('<dd class="ignore">ignore</dd></dl>');
+			dl.push('<dd class="ignore">Ignorar</dd></dl>');
 		}
 		$container.append(dl.join('')).find('dd').bind('click', function(event) {
 			var $this = $(this), $parent = $this.parent();
